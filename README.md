@@ -11,8 +11,6 @@ The core data is managed in a MySQL database named linkedin_insights_db. The fol
 
 pages: Stores general company page information.
 
-SQL
-
 CREATE TABLE pages (
     id INT AUTO_INCREMENT PRIMARY KEY,
     page_name VARCHAR(255),
@@ -25,9 +23,8 @@ CREATE TABLE pages (
     followers INT,
     head_count INT
 );
-posts: Stores individual posts associated with a company page.
 
-SQL
+posts: Stores individual posts associated with a company page.
 
 CREATE TABLE posts (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -38,9 +35,8 @@ CREATE TABLE posts (
     created_at DATETIME,
     FOREIGN KEY (page_id) REFERENCES pages(id)
 );
-employees: An auxiliary table for employee data (though the provided code does not currently implement scraping for this table, the schema is prepared).
 
-SQL
+employees: An auxiliary table for employee data (though the provided code does not currently implement scraping for this table, the schema is prepared).
 
 CREATE TABLE employees (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -57,7 +53,7 @@ A file named linkedin_cookies.txt must be present in the project's base director
 ▶️ Running the Application
 The application is run as a standard FastAPI service:
 
-Bash
+Bash :-
 
 uvicorn app.main:app --workers 1 --port 8003
 This command starts the API server, making the endpoints available at http://127.0.0.1:8003.
@@ -65,52 +61,48 @@ This command starts the API server, making the endpoints available at http://127
 💻 Code Architecture: File by File Explanation
 The project is structured into several files, each handling a specific, decoupled part of the overall logic.
 
-database.py
-This file is the Database Connector.
+database.py:-
+1.This file is the Database Connector.
 
-It defines the DATABASE_URL to connect to the MySQL database.
+2.It defines the DATABASE_URL to connect to the MySQL database.
 
-It creates the SQLAlchemy engine for managing connections.
+3.It creates the SQLAlchemy engine for managing connections.
 
-It sets up SessionLocal, which is a factory for creating database sessions (db).
+4.It sets up SessionLocal, which is a factory for creating database sessions (db).
 
-It defines Base, the declarative base class that all model classes inherit from to define the table structure.
+5.It defines Base, the declarative base class that all model classes inherit from to define the table structure.
 
-models.py
-This file defines the Database Schema.
+models.py:-
+1.This file defines the Database Schema.
 
-It contains the SQLAlchemy models (Page and Post) that map Python classes to the pages and posts tables in the database.
+2.It contains the SQLAlchemy models (Page and Post) that map Python classes to the pages and posts tables in the database.
 
-It specifies the columns (e.g., Column(Integer, primary_key=True)) and their relationships (e.g., the page_id in Post is a ForeignKey to pages.id).
+3.It specifies the columns (e.g., Column(Integer, primary_key=True)) and their relationships (e.g., the page_id in Post is a ForeignKey to pages.id).
 
-crud.py (Create, Read, Update, Delete)
-This file is the Database Interaction Layer.
+crud.py (Create, Read, Update, Delete):-
+1.This file is the Database Interaction Layer.
 
-It contains functions like get_page_by_id, create_page, get_posts_by_page, and create_posts.
+2.It contains functions like get_page_by_id, create_page, get_posts_by_page, and create_posts.
 
-These functions handle all the logic for querying and saving data to the database, ensuring that the main API logic remains clean and focused. For instance, create_page takes a Python dictionary of data, converts it into a Page object, adds it to the session, and commits it.
+3.These functions handle all the logic for querying and saving data to the database, ensuring that the main API logic remains clean and focused. For instance, create_page takes a Python dictionary of data, converts it into a Page object, adds it to the session, and commits it.
 
-scraper.py
-This file is the Web Scraping Engine.
+scraper.py:-
+1.This file is the Web Scraping Engine.
 
-scrape_linkedin_page(page_id): Uses a simple requests GET and BeautifulSoup to scrape the static company page information (name, URL, description, followers, etc.). This data is generally public and does not require a login.
+2.scrape_linkedin_page(page_id): Uses a simple requests GET and BeautifulSoup to scrape the static company page information (name, URL, description, followers, etc.). This data is generally public and does not require a login.
 
-scrape_company_posts(page_id):
+3.scrape_company_posts(page_id):
 
-This function requires Selenium to launch a full web browser (Chrome) because LinkedIn loads post content dynamically using JavaScript.
-
-It's configured to open the posts URL, then scroll down (driver.execute_script) multiple times to load more content.
-
-After scrolling, it uses BeautifulSoup to parse the fully loaded page source and extract post details (content, likes, comments).
+This function requires Selenium to launch a full web browser (Chrome) because LinkedIn loads post content dynamically using JavaScript.It's configured to open the posts URL, then scroll down (driver.execute_script) multiple times to load more content.After scrolling, it uses BeautifulSoup to parse the fully loaded page source and extract post details (content, likes, comments).
 
 Crucially, this is where the need for a login arises. To access and scrape a page's posts without being immediately redirected to a login prompt, a valid, authenticated session is necessary, which is handled by the (currently non-implemented) load_cookies function.
 
-main.py
-This is the API Endpoint Handler using FastAPI.
+main.py:-
+1.This is the API Endpoint Handler using FastAPI.
 
-It initializes the FastAPI app and ensures the database tables are created (Base.metadata.create_all).
+2.It initializes the FastAPI app and ensures the database tables are created (Base.metadata.create_all).
 
-get_db(): This is a FastAPI dependency function that handles creating and closing a database session for each request.
+3.get_db(): This is a FastAPI dependency function that handles creating and closing a database session for each request.
 
 /page/{page_id} (GET):
 
@@ -146,6 +138,7 @@ If a record exists, the stored JSON data is instantly returned.
 If it does not exist, the scraper is activated to fetch the page's public information. This new data is then saved into the pages table for future, faster access.
 
 Request to /page/deepsolv/posts:
+<img width="1354" height="751" alt="image" src="https://github.com/user-attachments/assets/d77e84d5-40db-498a-b682-a39009797e88" />
 
 The API checks the posts table for any posts linked to the deepsolv page (via page_id).
 
