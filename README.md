@@ -2,8 +2,8 @@
 This project is a FastAPI application that acts as a LinkedIn Insights Scraper and API. It uses SQLAlchemy and a MySQL database to efficiently store scraped company pages and posts. The API prioritizes database lookup (caching) before triggering web scraping with Selenium and BeautifulSoup. 
 LinkedIn Insights Scraper API
 This project implements a FastAPI application that serves as an API for scraping and storing LinkedIn company page and post data into a MySQL database. It uses SQLAlchemy for database interaction and Selenium with BeautifulSoup for handling the web scraping of dynamic content.
-<img width="1573" height="594" alt="image" src="https://github.com/user-attachments/assets/50cf3ea5-3d59-4a02-a079-63f6eabd3016" />
-<img width="980" height="613" alt="Screenshot 2025-12-14 172642" src="https://github.com/user-attachments/assets/7bcc91a8-e61f-4000-aee4-a6518c211c1d" />
+<img width="1273" height="494" alt="image" src="https://github.com/user-attachments/assets/50cf3ea5-3d59-4a02-a079-63f6eabd3016" />
+<img width="780" height="513" alt="Screenshot 2025-12-14 172642" src="https://github.com/user-attachments/assets/7bcc91a8-e61f-4000-aee4-a6518c211c1d" />
 
 
 🚀 Getting Started
