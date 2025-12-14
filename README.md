@@ -6,13 +6,13 @@ This project implements a FastAPI application that serves as an API for scraping
 <img width="780" height="513" alt="Screenshot 2025-12-14 172642" src="https://github.com/user-attachments/assets/7bcc91a8-e61f-4000-aee4-a6518c211c1d" />
 
 
-🚀 Getting Started
+
 This section outlines the foundational steps and components of the application.
 
-📦 Database Setup
+# Database Setup
 The core data is managed in a MySQL database named linkedin_insights_db. The following tables were created to store the scraped information:
 
-pages: Stores general company page information.
+# pages: Stores general company page information.
 
 CREATE TABLE pages (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -27,7 +27,7 @@ CREATE TABLE pages (
     head_count INT
 );
 
-posts: Stores individual posts associated with a company page.
+# posts: Stores individual posts associated with a company page.
 
 CREATE TABLE posts (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -39,7 +39,7 @@ CREATE TABLE posts (
     FOREIGN KEY (page_id) REFERENCES pages(id)
 );
 
-employees: An auxiliary table for employee data (though the provided code does not currently implement scraping for this table, the schema is prepared).
+# employees: An auxiliary table for employee data (though the provided code does not currently implement scraping for this table, the schema is prepared).
 
 CREATE TABLE employees (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -48,15 +48,15 @@ CREATE TABLE employees (
     designation VARCHAR(255),
     FOREIGN KEY (page_id) REFERENCES pages(id)
 );
-🔑 Authentication (For Post Scraping)
-LinkedIn requires a logged-in session to reliably access and scrape post data. This application is configured to use a local file for storing session cookies:
-
+# Authentication (For Post Scraping)
+LinkedIn requires a logged-in session to reliably access and scrape post data. 
+This application is configured to use a local file for storing session cookies:
 A file named linkedin_cookies.txt must be present in the project's base directory. The load_cookies function in scraper.py is designed to read and use these cookies to authenticate the Selenium browser instance, allowing it to scrape post content.
 
-▶️ Running the Application
+# ▶️ Running the Application
 The application is run as a standard FastAPI service:
 
-Bash :-
+# Bash :-
 
 uvicorn app.main:app --workers 1 --port 8003
 This command starts the API server, making the endpoints available at http://127.0.0.1:8003.
