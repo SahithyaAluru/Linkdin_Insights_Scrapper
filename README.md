@@ -64,7 +64,8 @@ This command starts the API server, making the endpoints available at http://127
 💻 Code Architecture: File by File Explanation
 The project is structured into several files, each handling a specific, decoupled part of the overall logic.
 
-database.py:-
+# database.py:-
+
 1.This file is the Database Connector.
 
 2.It defines the DATABASE_URL to connect to the MySQL database.
@@ -75,21 +76,24 @@ database.py:-
 
 5.It defines Base, the declarative base class that all model classes inherit from to define the table structure.
 
-models.py:-
+# models.py:-
+
 1.This file defines the Database Schema.
 
 2.It contains the SQLAlchemy models (Page and Post) that map Python classes to the pages and posts tables in the database.
 
 3.It specifies the columns (e.g., Column(Integer, primary_key=True)) and their relationships (e.g., the page_id in Post is a ForeignKey to pages.id).
 
-crud.py (Create, Read, Update, Delete):-
+# crud.py (Create, Read, Update, Delete):-
+
 1.This file is the Database Interaction Layer.
 
 2.It contains functions like get_page_by_id, create_page, get_posts_by_page, and create_posts.
 
 3.These functions handle all the logic for querying and saving data to the database, ensuring that the main API logic remains clean and focused. For instance, create_page takes a Python dictionary of data, converts it into a Page object, adds it to the session, and commits it.
 
-scraper.py:-
+# scraper.py:-
+
 1.This file is the Web Scraping Engine.
 
 2.scrape_linkedin_page(page_id): Uses a simple requests GET and BeautifulSoup to scrape the static company page information (name, URL, description, followers, etc.). This data is generally public and does not require a login.
@@ -100,39 +104,40 @@ This function requires Selenium to launch a full web browser (Chrome) because Li
 
 Crucially, this is where the need for a login arises. To access and scrape a page's posts without being immediately redirected to a login prompt, a valid, authenticated session is necessary, which is handled by the (currently non-implemented) load_cookies function.
 
-main.py:-
+# main.py:-
+
 1.This is the API Endpoint Handler using FastAPI.
 
 2.It initializes the FastAPI app and ensures the database tables are created (Base.metadata.create_all).
 
 3.get_db(): This is a FastAPI dependency function that handles creating and closing a database session for each request.
 
-/page/{page_id} (GET):
+# /page/{page_id} (GET):
 
-Tries to read the page from the database (crud.get_page_by_id).
+1.Tries to read the page from the database (crud.get_page_by_id).
 
-If found, it immediately returns the saved data (avoiding unnecessary scraping).
+2.If found, it immediately returns the saved data (avoiding unnecessary scraping).
 
-If not found, it calls scraper.scrape_linkedin_page to fetch the data.
+3.If not found, it calls scraper.scrape_linkedin_page to fetch the data.
 
-It then calls crud.create_page to save the new data into the pages table.
+4.It then calls crud.create_page to save the new data into the pages table.
 
-/page/{page_id}/posts (GET):
+# /page/{page_id}/posts (GET):
 
-First, it verifies the page exists in the DB.
+1.First, it verifies the page exists in the DB.
 
-Tries to read existing posts for that page (crud.get_posts_by_page).
+2.Tries to read existing posts for that page (crud.get_posts_by_page).
 
-If posts are found, it returns them.
+3.If posts are found, it returns them.
 
-If no posts are found, it executes the resource-intensive process: it calls scraper.scrape_company_posts (which launches the Selenium browser).
+4.If no posts are found, it executes the resource-intensive process: it calls scraper.scrape_company_posts (which launches the Selenium browser).
 
 Finally, it calls crud.create_posts to save the newly scraped posts to the posts table.
 
-🌐 API Workflow & Data Persistence
+# 🌐 API Workflow & Data Persistence
 The application's design is based on a Cache-Aside pattern, where the database acts as a cache for scraped data.
 
-Request to /page/deepsolv:
+# Request to /page/deepsolv:
 
 The API first checks the pages table for a record with linkedin_id = 'deepsolv'.
 
